@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  mysql-springboot-container:
+    image: mysql:8.0.28
+    container_name: mysql-springboot-container
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-springboot-data:/var/lib/mysql
+      - mysql-springboot-config-deamond:/etc/mysql/conf.d
+    environment:
+      MYSQL_USER: canhnd
+      MYSQL_PASSWORD: Abc@123456789
+      MYSQL_ROOT_PASSWORD: Abc@123456789
+      MYSQL_DATABASE: figure
+    networks:
+      - sunny_figure
+  springboot-docker-container:
+    image: duccanh/springboot-docker:v1.0.1
+    container_name: springboot-docker-container
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/app
+    networks:
+      - sunny_figure
+  sunny-react-container:
+    image: duccanh/sunny-react-container:v1.0.0
+    container_name: sunny-react-container
+    working_dir: /app
+    ports:
+      - 3000:3000
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    command: sh -c "apk add --no-cache npm && npm install && npm start"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - sunny_figure
+#create network
+networks:
+  sunny_figure:
+    name: springboot-app-network
+volumes:
+  mysql-springboot-data:
+  mysql-springboot-config-deamond:
+
