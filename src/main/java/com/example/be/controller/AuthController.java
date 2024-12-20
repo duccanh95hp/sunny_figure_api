@@ -3,9 +3,11 @@ package com.example.be.controller;
 import com.example.be.common.Result;
 import com.example.be.dto.UserDto;
 import com.example.be.entity.ERole;
+import com.example.be.entity.OrderEntity;
 import com.example.be.entity.Role;
 import com.example.be.entity.User;
 import com.example.be.model.*;
+import com.example.be.repository.OrderRepo;
 import com.example.be.repository.RoleRepository;
 import com.example.be.repository.UserRepository;
 import com.example.be.security.jwt.JwtUtils;
@@ -25,10 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -49,6 +48,9 @@ public class AuthController {
 
     @Autowired
     JwtUtils jwtUtils;
+
+    @Autowired
+    OrderRepo orderRepo;
 
     @PostMapping("/signin")
     public Result<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -120,6 +122,7 @@ public class AuthController {
         }
 
         user.setRoles(roles);
+        user.setAffiliateCode(UUID.randomUUID().toString().replace("-", "").substring(0, 8));
         userRepository.save(user);
 
         return Result.result(HttpStatus.OK.value(), "User registered successfully!",null);
@@ -144,6 +147,15 @@ public class AuthController {
         userDto.setEmail(user.get().getEmail());
         userDto.setTelephone(user.get().getTelephone());
         userDto.setFullName(user.get().getFullName());
+        userDto.setAffiliateCode(user.get().getAffiliateCode());
+
+        // get all order by affilcate code and status = complete
+        List<OrderEntity> orderEntities = orderRepo.findAllByAffiliateCodeAndStatus(user.get().getAffiliateCode(), "COMPLETED");
+        Double affiliateAmount = 0d;
+        for (OrderEntity order : orderEntities){
+            affiliateAmount += (order.getTotalPrice() * 0.05);
+        }
+        userDto.setAffiliateAmount(affiliateAmount);
         return Result.result(HttpStatus.OK.value(), "", userDto);
     }
     @PostMapping("/update")

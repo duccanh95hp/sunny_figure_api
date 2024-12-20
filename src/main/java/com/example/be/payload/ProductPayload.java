@@ -14,6 +14,7 @@ public class ProductPayload {
     private String name;
     private String description;
     private Double price;
+    private Double originalPrice;
     private MultipartFile file;
 
     private Long categoryId;

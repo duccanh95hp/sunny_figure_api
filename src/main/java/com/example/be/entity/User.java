@@ -45,6 +45,8 @@ public class User {
     private String fullName;
     @Column(name = "address")
     private String address;
+    @Column(name = "affiliate_code")
+    private String affiliateCode;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

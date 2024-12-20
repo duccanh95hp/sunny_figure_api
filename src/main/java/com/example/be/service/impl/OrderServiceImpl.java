@@ -5,6 +5,7 @@ import com.example.be.dto.OrderDetailDto;
 import com.example.be.dto.OrderDetailStatusDto;
 import com.example.be.dto.OrderDto;
 import com.example.be.entity.*;
+import com.example.be.exception.BusinessException;
 import com.example.be.model.OrderFilter;
 import com.example.be.model.OrderPayloadFilter;
 import com.example.be.payload.OrderPayload;
@@ -15,6 +16,7 @@ import com.example.be.statics.Status;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.example.be.common.Constants.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +49,21 @@ public class OrderServiceImpl implements OrderService {
         if(user.isEmpty()){
             return null;
         }
+        if(!payload.getAffiliateCode().isEmpty()){
+            if(!userRepository.existsByAffiliateCode(payload.getAffiliateCode())){
+                throw new BusinessException(
+                        AFFILIATE_CODE_NOT_FOUND,
+                        HttpStatus.BAD_REQUEST.value()
+                );
+            }
+            if(user.get().getAffiliateCode().equals(payload.getAffiliateCode())){
+                throw new BusinessException(
+                        NO_SELF_INTRODUCTION,
+                        HttpStatus.BAD_REQUEST.value()
+                );
+            }
+        }
+
         Long deliveryInformationId = null;
         if(payload.getDeliveryInformation().getId() == null){
             DeliveryInformationEntity delivery = new DeliveryInformationEntity();
@@ -65,6 +84,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUserId(user.get().getId());
         order.setPaymentMethod(payload.getPaymentMethod());
         order.setDeliveryInformationId(deliveryInformationId);
+        order.setAffiliateCode(payload.getAffiliateCode());
         order.setCreatedAt(LocalDateTime.now());
         order.setUpdatedAt(LocalDateTime.now());
 
@@ -81,7 +101,10 @@ public class OrderServiceImpl implements OrderService {
             totalPrice += (orderDetail.getPrice() * orderDetail.getQuantity());
             Product product = productRepo.findById(orderDetail.getProductId()).orElseThrow();
             if(orderDetail.getQuantity() > product.getStockQuantity()){
-                throw new IllegalArgumentException("Quantity exceeds available stock for product ID: " + orderDetail.getProductId());
+                throw new BusinessException(
+                        PURCHASE_EXCEEDS_AVAILABLE,
+                        HttpStatus.BAD_REQUEST.value()
+                );
             }
             product.setStockQuantity(product.getStockQuantity() - orderDetail.getQuantity());
             productRepo.save(product);
@@ -166,6 +189,8 @@ public class OrderServiceImpl implements OrderService {
             orderDto.setDeliveryDate(order.getDeliveryDate());
             orderDto.setCreatedAt(order.getCreatedAt());
             orderDto.setOrderCode(order.getOrderCode());
+            orderDto.setAffiliateCode(order.getAffiliateCode());
+            orderDto.setPaymentTime(order.getPaymentTime());
             objectList.add(orderDto);
         }
         return com.example.be.common.Page.builder()
@@ -204,7 +229,16 @@ public class OrderServiceImpl implements OrderService {
     public boolean updateStatus(Long orderId, Status status) {
         Optional<OrderEntity> order = orderRepo.findById(orderId);
         if(order.isPresent()){
+            if("COMPLETED".equals(order.get().getStatus())){
+                throw new BusinessException(
+                        COMPLETED_NOT_UPDATE,
+                        HttpStatus.BAD_REQUEST.value()
+                );
+            }
             order.get().setStatus(status.toString());
+            if(Status.COMPLETED.equals(status)){
+                order.get().setPaymentTime(LocalDateTime.now());
+            }
             orderRepo.save(order.get());
             return true;
         }

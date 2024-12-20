@@ -33,6 +33,8 @@ public class OrderEntity {
     private Double totalPrice;
     @Column(name = "order_code")
     private String orderCode;
+    @Column(name = "affiliate_code")
+    private String affiliateCode;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")

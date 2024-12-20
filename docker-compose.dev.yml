@@ -18,6 +18,8 @@ services:
   springboot-docker-container:
     image: duccanh/springboot-docker:v1.0.1
     container_name: springboot-docker-container
+    env_file:
+      - .env
     ports:
       - 8080:8080
     volumes:
@@ -27,13 +29,8 @@ services:
   sunny-react-container:
     image: duccanh/sunny-react-container:v1.0.0
     container_name: sunny-react-container
-    working_dir: /app
     ports:
-      - 3000:3000
-    volumes:
-      - ../frontend:/app
-      - /app/node_modules
-    command: sh -c "apk add --no-cache npm && npm install && npm start"
+      - 80:3000
     environment:
       - CHOKIDAR_USEPOLLING=true
     networks:

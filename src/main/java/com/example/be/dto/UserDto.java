@@ -17,4 +17,6 @@ public class UserDto {
     private String telephone;
     private String fullName;
     private String address;
+    private String affiliateCode;
+    private Double affiliateAmount;
 }

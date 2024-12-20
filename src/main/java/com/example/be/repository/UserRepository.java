@@ -16,5 +16,5 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     @Query("SELECT u FROM User u WHERE DAY(u.birthday) = DAY(CURRENT_DATE) AND MONTH(u.birthday) = MONTH(CURRENT_DATE)")
     List<User> findUsersWithSameBirthday();
-
+    Boolean existsByAffiliateCode(String affiliateCode);
 }

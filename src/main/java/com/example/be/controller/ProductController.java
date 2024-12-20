@@ -22,6 +22,7 @@ public class ProductController {
     ProductService productService;
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Result<?> create(@ModelAttribute("payload") ProductPayload payload){
+        payload.setOriginalPrice(payload.getPrice());
         Product product = productService.save(payload);
         if(product ==  null) return Result.result(HttpStatus.BAD_REQUEST.value(), FAILURE, null);
         return Result.result(HttpStatus.OK.value(), SUCCESS, product);
@@ -34,9 +35,9 @@ public class ProductController {
     }
     @GetMapping("/{id}")
     public Result<?> get(@PathVariable("id") Long id){
-        Product category = productService.findById(id);
-        if(category ==  null) return Result.result(HttpStatus.BAD_REQUEST.value(), FAILURE, null);
-        return Result.result(HttpStatus.OK.value(), SUCCESS, category);
+        Product product = productService.findById(id);
+        if(product ==  null) return Result.result(HttpStatus.BAD_REQUEST.value(), FAILURE, null);
+        return Result.result(HttpStatus.OK.value(), SUCCESS, product);
     }
     @DeleteMapping("/{id}")
     public Result<?> delete(@PathVariable("id") Long id){

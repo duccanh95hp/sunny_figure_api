@@ -17,4 +17,5 @@ public class OrderPayload {
     private String paymentMethod;
     private DeliveryInformationEntity deliveryInformation;
     private List<OrderDetailEntity> orderDetailEntities;
+    private String affiliateCode;
 }

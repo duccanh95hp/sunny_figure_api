@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.be.common.Constants.FAILURE;
 import static com.example.be.common.Constants.SUCCESS;
@@ -47,7 +48,8 @@ public class CategoryController {
     @GetMapping
     public Result<?> getAll(){
         List<Category> categories = categoryService.findAllByStatus(Status.ACTIVE);
-        return Result.result(HttpStatus.OK.value(), SUCCESS, categories);
+
+        return Result.result(HttpStatus.OK.value(), SUCCESS, categories.stream().limit(3).collect(Collectors.toList()));
     }
 
 }

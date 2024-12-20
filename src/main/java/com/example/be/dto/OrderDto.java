@@ -20,7 +20,9 @@ public class OrderDto {
     private String status;
     private String reason;
     private Double totalPrice;
+    private String affiliateCode;
     private LocalDateTime deliveryDate;
     private LocalDateTime createdAt;
+    private LocalDateTime paymentTime;
 
 }

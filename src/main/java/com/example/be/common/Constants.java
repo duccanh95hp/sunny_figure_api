@@ -20,4 +20,8 @@ public class Constants {
     public static final String IN_ACTIVE = "không hoạt động";
     public static final String WAIT_CONFIRM = "chờ xác nhận";
     public static final String CANCEL = "hủy";
+    public static final String PURCHASE_EXCEEDS_AVAILABLE = "Số lượng mua vượt qua số lượng hiện có";
+    public static final String NO_SELF_INTRODUCTION = "Không được tự giới thiệu";
+    public static final String AFFILIATE_CODE_NOT_FOUND = "Mã giới thiệu không tồn tại";
+    public static final String COMPLETED_NOT_UPDATE = "Đơn hàng hoàn thành không được thay đổi";
 }

@@ -31,6 +31,8 @@ public class Product {
     @NotNull
     @Column(name = "price")
     private Double price;
+    @Column(name = "original_price")
+    private Double originalPrice;
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
