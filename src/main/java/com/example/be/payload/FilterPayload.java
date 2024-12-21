@@ -19,4 +19,5 @@ public class FilterPayload {
     private double priceFrom;
     private Long categoryId;
     private Type type;
+    private String categoryName;
 }

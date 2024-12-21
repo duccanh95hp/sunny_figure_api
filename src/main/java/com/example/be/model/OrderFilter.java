@@ -19,4 +19,8 @@ public class OrderFilter {
     private int size;
     private int page;
     private int limit;
+    private String orderCode;
+    private String email;
+    private String phone;
+    private String name;
 }

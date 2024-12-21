@@ -24,4 +24,5 @@ public class Constants {
     public static final String NO_SELF_INTRODUCTION = "Không được tự giới thiệu";
     public static final String AFFILIATE_CODE_NOT_FOUND = "Mã giới thiệu không tồn tại";
     public static final String COMPLETED_NOT_UPDATE = "Đơn hàng hoàn thành không được thay đổi";
+    public static final String NOT_FORMAT_DATE = "Không đúng định dang Ngày tháng";
 }

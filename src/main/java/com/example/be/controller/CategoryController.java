@@ -45,9 +45,9 @@ public class CategoryController {
         if(result) return Result.success().setCode(HttpStatus.OK.value());
         return Result.result(HttpStatus.BAD_REQUEST.value(), FAILURE, null);
     }
-    @GetMapping
-    public Result<?> getAll(){
-        List<Category> categories = categoryService.findAllByStatus(Status.ACTIVE);
+    @PostMapping("/all")
+    public Result<?> getAll(@RequestBody CategoryPayload payload){
+        List<Category> categories = categoryService.findAll(payload);
 
         return Result.result(HttpStatus.OK.value(), SUCCESS, categories.stream().limit(3).collect(Collectors.toList()));
     }

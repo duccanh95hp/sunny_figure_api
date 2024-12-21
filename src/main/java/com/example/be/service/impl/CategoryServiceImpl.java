@@ -21,7 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category categoryModel = Category.builder()
                 .name(payload.getName())
                 .description(payload.getDescription())
-                .status(Status.ACTIVE)
+                .status(payload.getStatus())
                 .updatedAt(LocalDateTime.now())
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -34,6 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = findById(id);
         if(category != null){
             category.setName(payload.getName().isEmpty() ? category.getName() : payload.getName());
+            category.setStatus(payload.getStatus());
             category.setDescription(payload.getDescription().isEmpty() ? category.getDescription() : payload.getDescription());
             category.setUpdatedAt(LocalDateTime.now());
             return categoryRepo.save(category);
@@ -69,7 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
 
 
     @Override
-    public List<Category> findAllByStatus(Status status) {
-        return categoryRepo.findAllByStatus(status);
+    public List<Category> findAll(CategoryPayload payload) {
+        return categoryRepo.findAll(payload);
     }
 }

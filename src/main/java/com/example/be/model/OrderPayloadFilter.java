@@ -27,4 +27,8 @@ public class OrderPayloadFilter {
 
     private List<OrderDetailEntity> orderDetails;
     private int limit;
+    private String orderCode;
+    private String email;
+    private String phone;
+    private String name;
 }

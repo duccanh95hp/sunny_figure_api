@@ -35,4 +35,5 @@ build/
 
 # Ignore Firebase credentials
 src/main/resources/*.json
+docker-compose.dev.yml
 

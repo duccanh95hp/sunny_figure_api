@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface CategoryService extends CrudService<CategoryPayload, Category, Long>{
 
-    List<Category> findAllByStatus(Status status);
+    List<Category> findAll(CategoryPayload payload);
 }

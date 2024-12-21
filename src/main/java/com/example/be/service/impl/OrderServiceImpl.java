@@ -23,8 +23,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static com.example.be.common.Constants.*;
@@ -147,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
         if (!users.isPresent()) {
             throw new UsernameNotFoundException("User not found");
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         OrderFilter orderFilter = new OrderFilter();
         orderFilter.setSize(filter.getSize());
         orderFilter.setPage(filter.getPage());
@@ -159,12 +161,33 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         if(filter.getToDate() != null) {
-            orderFilter.setToDate(LocalDateTime.parse(filter.getToDate(), formatter));
+            try{
+                LocalDate toDate = LocalDate.parse(filter.getToDate(), formatter);
+                orderFilter.setToDate(toDate.atTime(23, 59, 59));
+            } catch (DateTimeParseException e){
+                throw new BusinessException(
+                        NOT_FORMAT_DATE,
+                        HttpStatus.BAD_REQUEST.value()
+                );
+            }
         }
         if(filter.getFromDate() != null) {
-            orderFilter.setFromDate(LocalDateTime.parse(filter.getFromDate(), formatter));
+            try{
+                LocalDate fromDate = LocalDate.parse(filter.getFromDate(), formatter);
+                orderFilter.setFromDate(fromDate.atTime(00,00,00));
+            } catch (DateTimeParseException e){
+                throw new BusinessException(
+                        NOT_FORMAT_DATE,
+                        HttpStatus.BAD_REQUEST.value()
+                );
+            }
+
         }
         orderFilter.setStatus(filter.getStatus());
+        orderFilter.setOrderCode(filter.getOrderCode());
+        orderFilter.setEmail(filter.getEmail());
+        orderFilter.setName(filter.getName());
+        orderFilter.setPhone(filter.getPhone());
         org.springframework.data.domain.Page<OrderEntity> page = orderRepo.getAllAndSearch(orderFilter, PageRequest.of(filter.getPage() - 1, filter.getSize()));
         if(page.isEmpty()) {
             return null;
