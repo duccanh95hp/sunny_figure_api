@@ -161,27 +161,30 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         if(filter.getToDate() != null) {
-            try{
-                LocalDate toDate = LocalDate.parse(filter.getToDate(), formatter);
-                orderFilter.setToDate(toDate.atTime(23, 59, 59));
-            } catch (DateTimeParseException e){
-                throw new BusinessException(
-                        NOT_FORMAT_DATE,
-                        HttpStatus.BAD_REQUEST.value()
-                );
+            if(filter.getToDate().isEmpty()){
+                try{
+                    LocalDate toDate = LocalDate.parse(filter.getToDate(), formatter);
+                    orderFilter.setToDate(toDate.atTime(23, 59, 59));
+                } catch (DateTimeParseException e){
+                    throw new BusinessException(
+                            NOT_FORMAT_DATE,
+                            HttpStatus.BAD_REQUEST.value()
+                    );
+                }
             }
         }
         if(filter.getFromDate() != null) {
-            try{
-                LocalDate fromDate = LocalDate.parse(filter.getFromDate(), formatter);
-                orderFilter.setFromDate(fromDate.atTime(00,00,00));
-            } catch (DateTimeParseException e){
-                throw new BusinessException(
-                        NOT_FORMAT_DATE,
-                        HttpStatus.BAD_REQUEST.value()
-                );
+            if(!filter.getFromDate().isEmpty()){
+                try{
+                    LocalDate fromDate = LocalDate.parse(filter.getFromDate(), formatter);
+                    orderFilter.setFromDate(fromDate.atTime(00,00,00));
+                } catch (DateTimeParseException e){
+                    throw new BusinessException(
+                            NOT_FORMAT_DATE,
+                            HttpStatus.BAD_REQUEST.value()
+                    );
+                }
             }
-
         }
         orderFilter.setStatus(filter.getStatus());
         orderFilter.setOrderCode(filter.getOrderCode());
