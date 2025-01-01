@@ -4,9 +4,9 @@ import com.example.be.common.Result;
 import com.example.be.entity.Category;
 import com.example.be.payload.CategoryPayload;
 import com.example.be.service.CategoryService;
-import com.example.be.statics.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,12 +22,14 @@ public class CategoryController {
     @Autowired
     CategoryService categoryService;
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<?> create(@RequestBody CategoryPayload payload){
         Category cate = categoryService.save(payload);
         if(cate ==  null) return Result.result(HttpStatus.BAD_REQUEST.value(), FAILURE, null);
         return Result.result(HttpStatus.OK.value(), SUCCESS, cate);
     }
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<?> update(@PathVariable("id") Long id,@RequestBody CategoryPayload payload){
         Category cate = categoryService.update(payload, id);
         if(cate ==  null) return Result.result(HttpStatus.BAD_REQUEST.value(), FAILURE, null);
@@ -40,6 +42,7 @@ public class CategoryController {
         return Result.result(HttpStatus.OK.value(), SUCCESS, category);
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<?> delete(@PathVariable("id") Long id){
         boolean result = categoryService.delete(id);
         if(result) return Result.success().setCode(HttpStatus.OK.value());

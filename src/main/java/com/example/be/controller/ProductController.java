@@ -9,6 +9,7 @@ import com.example.be.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -21,6 +22,7 @@ public class ProductController {
     @Autowired
     ProductService productService;
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<?> create(@ModelAttribute("payload") ProductPayload payload){
         payload.setOriginalPrice(payload.getPrice());
         Product product = productService.save(payload);
@@ -28,6 +30,7 @@ public class ProductController {
         return Result.result(HttpStatus.OK.value(), SUCCESS, product);
     }
     @PostMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<?> update(@PathVariable("id") Long id,@ModelAttribute("payload") ProductPayload payload){
         Product product = productService.update(payload, id);
         if(product ==  null) return Result.result(HttpStatus.BAD_REQUEST.value(), FAILURE, null);
@@ -40,6 +43,7 @@ public class ProductController {
         return Result.result(HttpStatus.OK.value(), SUCCESS, product);
     }
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<?> delete(@PathVariable("id") Long id){
         boolean result = productService.delete(id);
         if(result) return Result.success().setCode(HttpStatus.OK.value());

@@ -11,6 +11,7 @@ import com.example.be.service.OrderService;
 import com.example.be.statics.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class OrderController {
         return Result.result(HttpStatus.OK.value(),SUCCESS,orderDto);
     }
     @PostMapping("/status/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public Result<?> updateStatus(@PathVariable("id") Long id,@RequestBody OrderStatusPayload payload){
         boolean result = orderService.updateStatus(id, payload.getStatus());
         if(result){
